@@ -47,6 +47,40 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 npm run build
 ```
 
+### Cloudflare Pages (Wrangler)
+
+1. Authenticate:
+
+```bash
+npm run cf:whoami
+```
+
+2. Build the app:
+
+```bash
+npm run cf:build
+```
+
+3. Run a local Cloudflare Pages preview:
+
+```bash
+npm run cf:dev
+```
+
+4. Deploy to Cloudflare Pages:
+
+```bash
+npm run cf:deploy
+```
+
+The repository includes a `wrangler.toml` with `pages_build_output_dir = "dist"` so Cloudflare can use the Vite output directly.
+
+In the Cloudflare dashboard set:
+- **Build command:** `npm run build`
+- **Build output directory:** `dist`
+- **Production branch:** your main/production branch with automatic deploys enabled
+
+
 ---
 
 ## Project Structure
