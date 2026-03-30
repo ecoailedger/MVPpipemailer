@@ -1,304 +1,291 @@
 # Codex build brief
 
-## Important note
-The current OpenAI repo-level instruction file that Codex reads automatically is `AGENTS.md`, not `codex.md`. Save this file as `AGENTS.md` in the repo if you want Codex to reliably pick it up, or keep both files with the same content. Codex reads `AGENTS.md` files before starting work in a project. citeturn983870search1turn983870search18
+# Agent Spec: Outlook + Pipedrive Integration — MVP Mockup
 
-## Project goal
-Build a React frontend-only MVP mockup that demonstrates an Outlook-style workflow connected to Pipedrive actions.
+## Overview
 
-This is **not** a working integration. It is a clickable prototype to prove the product idea.
+Build a React single-page application that simulates an **Outlook Add-in** side-panel experience. The layout shows a realistic dummy Outlook inbox/email view on the **left**, and a Pipedrive integration panel on the **right**. The right panel lets the user connect the selected email to Pipedrive — logging it against a deal, creating a new deal, or updating a deal's pipeline stage.
 
-The experience should show:
-- Outlook-style dummy email data on the left
-- A right-side Pipedrive panel or popup for CRM actions
-- Ability to simulate:
-  - adding an email to an existing deal
-  - creating a new deal from an email
-  - updating a deal stage
-  - viewing lightweight deal context tied to the selected email
+This is a frontend-only MVP proof-of-concept with **all dummy data hardcoded**. No real API calls. The goal is to validate the UX flow and layout for stakeholder sign-off.
 
-## Product summary
-The mockup should answer this question clearly:
+---
 
-**“What would an Outlook add-in look like if a user could manage Pipedrive actions directly against an email?”**
+## Tech Stack
 
-The UI should feel like a realistic business MVP that could be shown internally to stakeholders.
+- **React** (functional components + hooks)
+- **Tailwind CSS** for layout and utility styling
+- **shadcn/ui** components where appropriate (Dialog, Select, Badge, Button, Input, Tabs)
+- No backend, no auth, no API calls — all state is local
 
-## Build outcome
-Create a **single polished React app** with hardcoded data and strong UX.
+---
 
-Preferred stack:
-- React
-- TypeScript
-- Tailwind CSS
-- Local component state only
-- No backend
-- No authentication
-- No real API calls
+## Layout
 
-Use clean, enterprise-style UI patterns. Desktop-first is fine.
-
-## Core experience
-### Layout
-Build a two-part interface:
-
-#### Left side: Outlook-style mail experience
-Include:
-- simple top bar/header
-- inbox list with dummy emails
-- selected email preview/content area
-- sender, subject, received time, message body, tags or status markers
-- optional folders/sidebar if it improves the mockup
-
-The Outlook section should look familiar, but do not obsess over pixel-perfect cloning.
-
-#### Right side: Pipedrive action panel
-This should open as a right-side drawer, fixed side panel, or modal anchored on the right.
-
-Include sections for:
-1. **Link to existing deal**
-2. **Create new deal**
-3. **Update existing deal stage**
-4. **Mini deal summary / CRM context**
-
-This side should clearly feel like the CRM action area for the selected email.
-
-## User flows to simulate
-Implement the following dummy flows:
-
-### 1. Attach selected email to an existing deal
-User can:
-- select an email on the left
-- open the Pipedrive panel
-- search or choose an existing deal
-- click an action such as `Add to deal`
-- see a visible success state or toast
-- see the deal now shown as linked to that email
-
-### 2. Create a new deal from the selected email
-User can:
-- create a deal using prefilled values from the email
-- edit fields like contact, organisation, deal title, value, stage
-- submit locally
-- see the new deal appear in the mock deal list
-- see the selected email linked to that newly created deal
-
-### 3. Update a deal stage
-User can:
-- choose an already linked deal or any deal
-- change the deal stage from a dropdown, pills, or stepper
-- immediately see that change reflected in the UI
-
-### 4. Surface CRM context for the selected email
-When an email is selected, show useful CRM-style information such as:
-- matching contact name
-- organisation
-- current open deals
-- stage
-- estimated value
-- last activity
-
-## Dummy data requirements
-Use hardcoded mock data only.
-
-Create realistic datasets for:
-- emails
-- contacts
-- organisations
-- deals
-- pipeline stages
-- activities or timeline events
-
-Use plausible B2B sales examples.
-
-Example themes that fit well:
-- software demo request
-- pricing follow-up
-- contract review
-- renewal conversation
-- implementation check-in
-- quote approval
-
-## Suggested dummy structures
-You do not need to match this exactly, but stay close.
-
-```ts
-export type EmailItem = {
-  id: string;
-  fromName: string;
-  fromEmail: string;
-  subject: string;
-  preview: string;
-  body: string;
-  receivedAt: string;
-  linkedDealId?: string;
-  tags?: string[];
-};
-
-export type Contact = {
-  id: string;
-  name: string;
-  email: string;
-  organisationId: string;
-  role?: string;
-};
-
-export type Organisation = {
-  id: string;
-  name: string;
-  industry?: string;
-};
-
-export type DealStage =
-  | 'Lead In'
-  | 'Contact Made'
-  | 'Demo Scheduled'
-  | 'Proposal Sent'
-  | 'Negotiation'
-  | 'Won'
-  | 'Lost';
-
-export type Deal = {
-  id: string;
-  title: string;
-  contactId: string;
-  organisationId: string;
-  value: number;
-  stage: DealStage;
-  lastActivity: string;
-  emailIds: string[];
-};
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  [Outlook Add-in Chrome — top bar with "Midwich Pipedrive Connect"] │
+├──────────────────────────────┬──────────────────────────────────────┤
+│                              │                                      │
+│   LEFT PANE                  │   RIGHT PANE                         │
+│   Outlook Email View         │   Pipedrive Panel                    │
+│   (mock inbox + email body)  │   (action cards + forms)             │
+│                              │                                      │
+└──────────────────────────────┴──────────────────────────────────────┘
 ```
 
-## UX expectations
-The UI should be polished enough for internal demo use.
+Split: **55% left / 45% right**. Fixed height viewport (simulates the constrained add-in container). Subtle vertical divider between panes.
 
-Requirements:
-- modern SaaS styling
-- clear hierarchy
-- strong spacing
-- professional typography
-- obvious selected states
-- subtle badges, chips, and status indicators
-- success feedback for actions
-- empty states where useful
+---
 
-Recommended interactions:
-- searchable existing deal dropdown or searchable list
-- stage selector with instant visual update
-- prefilled create-deal form from selected email
-- activity feed or linked-record list in the CRM panel
-- toast notifications for successful mock actions
+## Left Pane — Outlook Email Mockup
 
-## Suggested screens/states
-At minimum, support:
-- default loaded inbox with one selected email
-- email with no linked deal yet
-- email already linked to a deal
-- creating a new deal
-- editing a stage
-- successful action confirmation
+### Inbox List (top ~30% of left pane)
 
-## Component suggestions
-Break the UI into sensible components such as:
-- `AppShell`
-- `OutlookSidebar`
-- `InboxList`
-- `EmailPreview`
-- `PipedrivePanel`
-- `DealSearch`
-- `CreateDealForm`
-- `DealStageEditor`
-- `DealSummaryCard`
-- `ActivityTimeline`
-- `Toast`
+A scrollable list of 6–8 dummy emails. Each row shows:
+- Sender avatar (initials, coloured circle)
+- Sender name + company
+- Subject line (truncated)
+- Timestamp
+- Unread indicator dot for some
 
-## Behaviour rules
-- All interactions must work from local state only
-- No network requests
-- No mocked backend server
-- No real Outlook SDK
-- No real Pipedrive SDK
-- No environment variables needed
-- No authentication flow
+**Dummy email data to hardcode:**
 
-Everything should be self-contained and runnable locally.
+| # | From | Subject | Time | Unread |
+|---|------|---------|------|--------|
+| 1 | James Hargreaves (Avocor) | Re: Q2 AV Distribution Proposal | 10:42 AM | ✓ |
+| 2 | Sarah Mitchell (Midwich UK) | FW: Clevertouch Bundle Pricing | 9:15 AM | |
+| 3 | Tom Briggs (Comm-Tec) | New opportunity — 50 unit order | Yesterday | ✓ |
+| 4 | Lisa Patel (Vestel) | Contract renewal — EMEA region | Yesterday | |
+| 5 | David Okonkwo (Midwich DE) | DACH pipeline review needed | Mon | ✓ |
+| 6 | Harriet Flynn (Samsung B2B) | Interactive display quote request | Mon | |
 
-## Visual direction
-Aim for a believable Outlook add-in / CRM assistant feel.
+**Selected email** (email #1 — James Hargreaves) is highlighted in the list and its body is shown below the list.
 
-Suggested visual approach:
-- neutral business palette
-- white and light gray surfaces
-- restrained accent colour for active states
-- rounded cards and panels
-- minimal clutter
+### Email Body (bottom ~70% of left pane)
 
-Avoid:
-- overdesigned marketing-style visuals
-- dark mode by default
-- too many animations
-- fake enterprise complexity
+Display a realistic email thread. Include:
 
-## Functional proof points
-The MVP should prove these points clearly:
-1. An email can be selected from an Outlook-like inbox.
-2. A user can connect that email to a Pipedrive deal.
-3. A user can create a new deal from email context.
-4. A user can update stage without leaving the email workflow.
-5. The UI looks convincing enough for stakeholder review.
+**From:** James Hargreaves `<j.hargreaves@avocor.com>`  
+**To:** George Davies `<g.davies@midwich.com>`  
+**CC:** procurement@avocor.com  
+**Subject:** Re: Q2 AV Distribution Proposal  
+**Date:** Monday 30 March 2026, 10:42 AM  
 
-## Non-goals
-Do **not** build:
-- real Outlook add-in manifest setup
-- real Pipedrive integration
-- backend services
-- auth
-- database
-- production-ready architecture beyond sensible frontend structure
+---
 
-## Delivery expectations
-Please generate:
-- a working React frontend
-- well-structured components
-- a local mock data file
-- clean TypeScript types
-- a polished layout suitable for a demo
+> Hi George,
+>
+> Thanks for sending over the updated proposal — the pricing looks competitive and the team were impressed with the Clevertouch bundle you put together.
+>
+> A couple of points we'd like to discuss before we sign off:
+>
+> 1. Can we get an extended warranty option on the 75" units?
+> 2. Lead times — we need delivery confirmed before end of April.
+> 3. Is there flexibility on the payment terms? We'd prefer 60-day net.
+>
+> If we can agree those points, I'm confident we can move this forward. Would you be available for a call Thursday afternoon?
+>
+> Best,  
+> James Hargreaves  
+> Senior Procurement Manager  
+> Avocor Ltd | Bristol, UK  
+> +44 117 496 2200
 
-If useful, create:
-- a small seeded data module
-- reusable utility functions
-- a lightweight design token or constants file
+---
 
-## Implementation preference
-If a decision is needed, prefer:
-- clarity over cleverness
-- believable demo UX over technical completeness
-- fewer screens with stronger polish
-- local state patterns that are easy to understand
+Include a subtle "Reply / Forward / ..." action bar at the bottom of the email body (purely decorative, no functionality needed).
 
-## Acceptance criteria
-The build is successful if:
-- it runs locally without external services
-- it shows Outlook-style dummy email content on the left
-- it shows a right-side Pipedrive interaction area
-- a selected email can be attached to an existing deal
-- a new deal can be created from the selected email
-- a deal stage can be changed visibly
-- the whole experience feels like a credible MVP
+---
 
-## Nice-to-have extras
-Only include these if they improve the mockup without slowing the build too much:
-- contact match confidence indicator
-- suggested deal match based on sender domain
-- recent activity feed
-- pipeline stage chips with colour coding
-- “Open in Pipedrive” fake link/button
-- small stats row such as open deals, deal value, last touch
+## Right Pane — Pipedrive Panel
 
-## Final instruction
-Do not overcomplicate this.
-Build the most convincing **frontend-only product mockup** possible for an internal MVP demo.
+This is the core UX being validated. It has three main states controlled by a **tab/step UI** at the top.
 
-The story should be obvious within 10 seconds of viewing it:
-**email on the left, Pipedrive actions on the right, all powered by dummy data, all clickable.**
+### Header
+
+```
+[Pipedrive logo — orange "P" mark]  Pipedrive Connect
+─────────────────────────────────────────────────────
+Sender: James Hargreaves · Avocor Ltd
+📧 j.hargreaves@avocor.com  📞 +44 117 496 2200
+```
+
+Show a **"Contact found in Pipedrive"** green badge next to the name.
+
+---
+
+### Tab Bar (3 tabs)
+
+```
+[ Log to Deal ]  [ New Deal ]  [ Update Stage ]
+```
+
+Default active tab: **Log to Deal**
+
+---
+
+### Tab 1 — Log to Deal
+
+**Purpose:** Attach this email as an activity/note against an existing deal.
+
+UI elements:
+
+1. **Search / Select Deal** — a dropdown/searchable select showing 3 dummy deals associated with Avocor:
+
+   | Deal | Stage | Value |
+   |------|-------|-------|
+   | Avocor Q2 AV Bundle | Proposal Sent | £48,500 |
+   | Avocor EMEA Framework 2026 | Qualified | £120,000 |
+   | Avocor Clevertouch 50-unit | New | £22,750 |
+
+   "Avocor Q2 AV Bundle" is pre-selected by default.
+
+2. **Activity Type** — pill toggle:  
+   `[📧 Email]  [📞 Call]  [📝 Note]`  
+   Default: Email selected.
+
+3. **Note / Summary** — textarea, pre-populated with:  
+   *"Email from James Hargreaves re: Q2 AV Distribution Proposal. Key points: warranty on 75" units, April delivery deadline, 60-day payment terms. Call requested for Thursday."*
+
+4. **[ Log Activity ]** primary button (orange).
+
+5. On click: show a success toast / inline confirmation:  
+   ✅ *"Activity logged to Avocor Q2 AV Bundle"*
+
+---
+
+### Tab 2 — New Deal
+
+**Purpose:** Create a new Pipedrive deal from this email contact.
+
+UI elements:
+
+1. **Deal Title** — text input, pre-populated:  
+   `"Avocor — [deal topic]"` — leave `[deal topic]` as editable placeholder
+
+2. **Pipeline** — select dropdown:
+   - `UK Distribution`
+   - `EMEA Direct`
+   - `Public Sector`
+
+3. **Stage** — select dropdown (dependent on pipeline, show for UK Distribution):
+   - `New Lead`
+   - `Qualified`
+   - `Proposal Sent`
+   - `Negotiation`
+   - `Closed Won`
+
+4. **Deal Value (£)** — numeric input, placeholder `0.00`
+
+5. **Expected Close Date** — date picker (or text input styled as date)
+
+6. **Owner** — select dropdown:
+   - `George Davies` (default)
+   - `Sarah Mitchell`
+   - `David Okonkwo`
+
+7. **[ Create Deal ]** primary button (orange).
+
+8. On click: show inline success:  
+   ✅ *"Deal created — Avocor Q2 Extended Warranty"*
+
+---
+
+### Tab 3 — Update Stage
+
+**Purpose:** Move an existing deal to a new pipeline stage.
+
+UI elements:
+
+1. **Select Deal** — same dropdown as Tab 1. Pre-select "Avocor Q2 AV Bundle".
+
+2. **Current Stage** — read-only badge: `Proposal Sent`
+
+3. **Move to Stage** — visual pipeline stepper (horizontal):
+
+   ```
+   [New] → [Qualified] → [Proposal Sent ✓] → [Negotiation] → [Closed Won]
+   ```
+
+   Clicking a stage selects it. Stages to the left of current are greyed/completed. Current is highlighted orange. Stages to the right are clickable targets.
+
+4. **Add a note (optional)** — textarea, placeholder: *"Reason for stage change..."*
+
+5. **[ Update Stage ]** primary button.
+
+6. On click: animate the stepper moving forward, then success toast:  
+   ✅ *"Avocor Q2 AV Bundle moved to Negotiation"*
+
+---
+
+## Visual Design Direction
+
+- Tone: **Professional / SaaS utility** — clean, purposeful, no decoration for decoration's sake
+- Colour palette:
+  - Outlook left pane: Microsoft-adjacent — whites, light greys, subtle blue accent (`#0078D4`)
+  - Pipedrive right pane: Pipedrive-adjacent — whites with **Pipedrive orange** (`#FF5A28`) as the primary action colour
+  - Divider: `1px solid #E5E7EB`
+- Typography: `Inter` or `DM Sans` — clean, legible, modern
+- Elevation: use subtle `box-shadow` on the right panel cards; flat left pane
+- Compact density — this is an add-in panel, not a full page app
+
+---
+
+## State & Interactions
+
+All state managed with `useState`. No routing needed.
+
+| Interaction | Behaviour |
+|-------------|-----------|
+| Click email in inbox list | Updates selected email, highlights row, updates right pane contact header |
+| Switch tabs | Shows correct tab content, resets form state |
+| Click pipeline stage in stepper | Highlights selected stage |
+| Click primary action button | Sets `submitted = true`, shows success banner for 3 seconds then resets |
+| Activity type pill toggle | Updates selected type, changes icon |
+
+---
+
+## File Structure (suggestion for Codex)
+
+```
+src/
+├── App.jsx                  # Root layout — splits left/right panes
+├── data/
+│   └── dummyData.js         # All hardcoded emails, deals, contacts, stages
+├── components/
+│   ├── OutlookPane/
+│   │   ├── InboxList.jsx
+│   │   └── EmailBody.jsx
+│   └── PipedrivePanel/
+│       ├── PanelHeader.jsx
+│       ├── TabBar.jsx
+│       ├── LogToDeal.jsx
+│       ├── NewDeal.jsx
+│       └── UpdateStage.jsx
+└── index.css                # Tailwind base
+```
+
+---
+
+## Out of Scope (MVP)
+
+- Real Pipedrive API calls
+- Real Outlook Graph API integration
+- Authentication / OAuth
+- Multi-account support
+- Search / filtering of deals beyond dropdown
+- Mobile layout
+- Error states / validation (basic only)
+
+---
+
+## Definition of Done
+
+- [ ] Layout renders correctly split left/right at ~55/45
+- [ ] Inbox list shows all 6 emails, clicking one updates email body
+- [ ] Right panel header updates sender details on email selection
+- [ ] All 3 tabs render correct forms with dummy data pre-populated
+- [ ] Action buttons show success confirmation on click
+- [ ] Pipeline stepper in Tab 3 is interactive and animated
+- [ ] No console errors
+- [ ] Looks credible enough to demo to a stakeholder in under 30 seconds
